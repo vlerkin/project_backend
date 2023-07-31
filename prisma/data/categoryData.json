@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "categoryName": "breakfast",
+    "imgUrl": ""
+  },
+  {
+    "id": 2,
+    "categoryName": "lunch",
+    "imgUrl": ""
+  },
+  {
+    "id": 3,
+    "categoryName": "dinner",
+    "imgUrl": ""
+  },
+  {
+    "id": 4,
+    "categoryName": "dessert",
+    "imgUrl": ""
+  }
+]
