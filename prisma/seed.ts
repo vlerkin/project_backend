@@ -7,8 +7,7 @@ import userData from "./data/userData.json";
 const prisma = new PrismaClient();
 
 const seed = async () => {
-  /*
-    for (let aUser of userData) {
+  /*for (let aUser of userData) {
     await prisma.user.create({
       data: aUser,
     });
