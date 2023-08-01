@@ -52,19 +52,13 @@ recipeRouter.get("/show/my", AuthMiddleware, async (req: AuthRequest, res) => {
 recipeRouter.delete("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   const recipeId = parseInt(req.params.id);
   const userId = req.userId;
-  const userRecipes = await prisma.recipe.findMany({
+  const userRecipe = await prisma.recipe.findUnique({
     where: {
       userId: userId,
-    },
-    select: {
-      id: true,
+      id: recipeId,
     },
   });
-  const userRecipeIds = [];
-  for (let aRecipe of userRecipes) {
-    userRecipeIds.push(aRecipe.id);
-  }
-  if (!userId || !userRecipeIds.includes(recipeId)) {
+  if (!userRecipe || !userId) {
     res.status(401).send({ message: "You are not authorized" });
     return;
   }
