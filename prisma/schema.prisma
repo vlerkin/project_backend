@@ -43,7 +43,7 @@ model Comment {
   name       String
   rating     Int
   review     String
-  recipes    Recipe   @relation(fields: [recipeId], references: [id])
+  recipes    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId   Int
   created_at DateTime
 }
