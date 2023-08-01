@@ -6,10 +6,6 @@ import ratedRecipe from "./services/ratedRecipe";
 export const recipeRouter = Router();
 const prisma = new PrismaClient();
 
-recipeRouter.get("/", (req, res) => {
-  res.send("Hello from recipe router");
-});
-
 recipeRouter.get("/show/my", AuthMiddleware, async (req: AuthRequest, res) => {
   const userId = req.userId;
   // request to a database to fetch a JSON with the data we want to display + id for further modifications
@@ -50,9 +46,42 @@ recipeRouter.get("/show/my", AuthMiddleware, async (req: AuthRequest, res) => {
           ),
     });
   }
-  res.send(ratedRecipes);
+  res.send(recipeIdRating);
 });
 
-recipeRouter.get("/:id", (req, res) => {
-  res.send(req.params.id);
+recipeRouter.delete("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
+  const recipeId = parseInt(req.params.id);
+  const userId = req.userId;
+  const userRecipes = await prisma.recipe.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  const userRecipeIds = [];
+  for (let aRecipe of userRecipes) {
+    userRecipeIds.push(aRecipe.id);
+  }
+  if (!userId || !userRecipeIds.includes(recipeId)) {
+    res.status(401).send({ message: "You are not authorized" });
+    return;
+  }
+  if (!recipeId) {
+    res.status(404).send({ message: "Recipe not found" });
+    return;
+  }
+  try {
+    console.log(recipeId);
+    await prisma.recipe.delete({
+      where: {
+        id: recipeId,
+      },
+    });
+    res.status(200).send({ message: "Recipe successfully deleted" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Something went wrong" });
+  }
 });

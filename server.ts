@@ -16,10 +16,6 @@ const prisma = new PrismaClient();
 
 app.use("/recipes", recipeRouter);
 
-app.get("/", (req, res) => {
-  res.send("blah");
-});
-
 app.listen(port, () => {
   console.log(`⚡ Server listening on port: ${port}`);
 });
