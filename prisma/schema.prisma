@@ -39,11 +39,11 @@ model Category {
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
   rating     Int
   review     String
-  recipes    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipes    Recipe    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId   Int
-  created_at DateTime
+  created_at DateTime? @default(now())
 }
