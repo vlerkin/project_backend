@@ -33,6 +33,11 @@ app.get("/", async (req, res) => {
       imgUrl: true,
       prepTime: true,
       serves: true,
+      categories: {
+        select: {
+          categoryName: true,
+        },
+      },
     },
   });
   // creating an array of recipeIds we fetched for a specific user
@@ -53,6 +58,9 @@ app.get("/", async (req, res) => {
       prepTime: allRecipes[i].prepTime,
       imgUrl: allRecipes[i].imgUrl,
       serves: allRecipes[i].serves,
+      categories: allRecipes[i].categories.map(
+        (aCategory) => aCategory.categoryName
+      ),
       recipeRating: !ratingInfo
         ? 0
         : Math.floor(

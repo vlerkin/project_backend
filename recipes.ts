@@ -52,16 +52,20 @@ recipeRouter.get("/show/my", AuthMiddleware, async (req: AuthRequest, res) => {
 recipeRouter.delete("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   const recipeId = parseInt(req.params.id);
   const userId = req.userId;
+  // let's check if requested recipeId belongs to this user, if the user is authorized to
+  // make changes
   const userRecipe = await prisma.recipe.findUnique({
     where: {
       userId: userId,
       id: recipeId,
     },
   });
+  // if userRecipe is empty it means that this user is not authorized to make changes
   if (!userRecipe || !userId) {
     res.status(401).send({ message: "You are not authorized" });
     return;
   }
+
   if (!recipeId) {
     res.status(404).send({ message: "Recipe not found" });
     return;
