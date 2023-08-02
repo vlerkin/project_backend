@@ -3,20 +3,11 @@ import { PrismaClient } from "@prisma/client";
 import { AuthMiddleware, AuthRequest } from "./auth/middleware";
 import ratedRecipe from "./services/ratedRecipe";
 
-export const recipeRouter = Router();
+export const recipeIdRouter = Router();
 
 const prisma = new PrismaClient();
 
-[
-  {
-    _avg: {
-      rating: 4,
-    },
-    recipeId: 1,
-  },
-];
-
-recipeRouter.get("/:id", async (req, res) => {
+recipeIdRouter.get("/:id", async (req, res) => {
   const recipeId = parseInt(req.params.id);
   const recipeIdRating = await ratedRecipe([recipeId]);
 
@@ -25,6 +16,7 @@ recipeRouter.get("/:id", async (req, res) => {
       id: recipeId,
     },
     select: {
+      id: true,
       name: true,
       instructions: true,
       ingredients: true,
@@ -34,11 +26,11 @@ recipeRouter.get("/:id", async (req, res) => {
     },
   });
   const recipeWithRating = { ...recipe };
-  recipeWithRating.rating = recipeIdRating[0]._avg.rating;
+  recipeWithRating.rating = Math.floor(recipeIdRating[0]._avg.rating);
   res.send(recipeWithRating);
 });
 
-recipeRouter.patch("/:id", AuthMiddleware, async (req, res) => {
+recipeIdRouter.patch("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   const userId = req.userId;
   const recipeId = parseInt(req.params.id);
   const requestBody = req.body;
@@ -59,7 +51,7 @@ recipeRouter.patch("/:id", AuthMiddleware, async (req, res) => {
   }
 });
 
-recipeRouter.post("/", AuthMiddleware, async (req, res) => {
+recipeIdRouter.post("/", AuthMiddleware, async (req, res) => {
   const requestBody = req.body;
   if (
     "name" in requestBody &&
@@ -101,7 +93,3 @@ recipeRouter.post("/", AuthMiddleware, async (req, res) => {
     });
   }
 });
-
-// recipeRouter.get("/:id", (req, res) => {
-//   res.send(req.params.id);
-// });
