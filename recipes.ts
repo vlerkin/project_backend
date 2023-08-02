@@ -7,14 +7,14 @@ export const recipeRouter = Router();
 
 const prisma = new PrismaClient();
 
-// "rating": [
-//   {
-//     "_avg": {
-//       "rating": 4
-//     },
-//     "recipeId": 1
-//   }
-// ]
+[
+  {
+    _avg: {
+      rating: 4,
+    },
+    recipeId: 1,
+  },
+];
 
 recipeRouter.get("/:id", async (req, res) => {
   const recipeId = parseInt(req.params.id);
@@ -34,13 +34,18 @@ recipeRouter.get("/:id", async (req, res) => {
     },
   });
   const recipeWithRating = { ...recipe };
-  recipeWithRating.rating = recipeIdRating;
+  recipeWithRating.rating = recipeIdRating[0]._avg.rating;
   res.send(recipeWithRating);
 });
 
 recipeRouter.patch("/:id", AuthMiddleware, async (req, res) => {
+  const userId = req.userId;
   const recipeId = parseInt(req.params.id);
   const requestBody = req.body;
+  if (!recipeId || !userId) {
+    res.status(401).send({ message: "You are not authorized" });
+    return;
+  }
   try {
     await prisma.recipe.update({
       where: {
