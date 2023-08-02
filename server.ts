@@ -2,7 +2,6 @@ import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { json } from "express";
 import { recipeRouter } from "./recipes";
-import { commentRouter } from "./comments";
 import ratedRecipe from "./services/ratedRecipe";
 import { toToken } from "./auth/jwt";
 
@@ -25,8 +24,6 @@ const port = 3001;
 const prisma = new PrismaClient();
 
 app.use("/recipes", recipeRouter);
-
-app.use("/recipes/comments", commentRouter);
 
 app.get("/", async (req, res) => {
   const allRecipes = await prisma.recipe.findMany({
