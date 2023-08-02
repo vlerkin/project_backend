@@ -80,6 +80,7 @@ recipeRouter.delete("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
+
 recipeRouter.post("/:recipeId/comments", async (req, res) => {
   const requestBody = req.body;
   const recipeId = parseInt(req.params.recipeId);
@@ -94,6 +95,92 @@ recipeRouter.post("/:recipeId/comments", async (req, res) => {
         },
       });
       res.status(201).send({ message: "Comment created!" });
+} catch (error) {
+      console.log(error);
+      res.status(500).send({ message: error });
+    }
+  } else {
+    res.status(400).send({
+      message: "'name', 'review', 'rating' are required!",
+    });
+  }
+});
+
+      
+recipeRouter.get("/:id", async (req, res) => {
+  const recipeId = parseInt(req.params.id);
+  const recipeIdRating = await ratedRecipe([recipeId]);
+
+  const recipe = await prisma.recipe.findFirst({
+    where: {
+      id: recipeId,
+    },
+    select: {
+      id: true,
+      name: true,
+      instructions: true,
+      ingredients: true,
+      prepTime: true,
+      serves: true,
+      imgUrl: true,
+    },
+  });
+  const recipeWithRating = { ...recipe };
+  recipeWithRating.rating = Math.floor(recipeIdRating[0]._avg.rating);
+  res.send(recipeWithRating);
+});
+
+recipeRouter.patch("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
+  const userId = req.userId;
+  const recipeId = parseInt(req.params.id);
+  const requestBody = req.body;
+  if (!recipeId || !userId) {
+    res.status(401).send({ message: "You are not authorized" });
+    return;
+  }
+  try {
+    await prisma.recipe.update({
+      where: {
+        id: recipeId,
+      },
+      data: requestBody,
+    });
+    res.status(200).send({ message: "Recipe updated!" });
+  } catch (error) {
+    res.status(500).send({ message: "Something went wrong!" });
+  }
+});
+
+recipeRouter.post("/", AuthMiddleware, async (req, res) => {
+  const requestBody = req.body;
+  if (
+    "name" in requestBody &&
+    "instructions" in requestBody &&
+    "ingredients" in requestBody &&
+    "prepTime" in requestBody &&
+    "categories" in requestBody &&
+    "serves" in requestBody &&
+    "imgUrl" in requestBody &&
+    "userId" in requestBody
+  ) {
+    try {
+      await prisma.recipe.create({
+        data: {
+          name: requestBody.name,
+          instructions: requestBody.instructions,
+          prepTime: requestBody.prepTime,
+          userId: requestBody.userId,
+          ingredients: requestBody.ingredients,
+          serves: requestBody.serves,
+          imgUrl: requestBody.imgUrl,
+          categories: {
+            connect: requestBody.categories.map((id: number) => {
+              return { id: id };
+            }),
+          },
+        },
+      });
+      res.status(201).send({ message: "Recipe created!" });
     } catch (error) {
       console.log(error);
       res.status(500).send({ message: error });
