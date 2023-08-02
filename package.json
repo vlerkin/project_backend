@@ -1,7 +1,6 @@
 {
   "name": "project_week4",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,5 +17,9 @@
     "prisma": "^5.0.0",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6"
+  },
+  "description": "",
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.2"
   }
 }
