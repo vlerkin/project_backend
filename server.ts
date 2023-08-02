@@ -1,7 +1,7 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { json } from "express";
-import { recipeIdRouter } from "./recipeID";
+import { recipeRouter } from "./recipes";
 
 // Create an express app
 const app = express();
@@ -13,7 +13,7 @@ const port = 3001;
 // Create a prisma client
 const prisma = new PrismaClient();
 
-app.use("/recipes", recipeIdRouter);
+app.use("/recipes", recipeRouter);
 
 app.get("/", (req, res) => {
   res.send("blah");
