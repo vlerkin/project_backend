@@ -57,6 +57,7 @@ app.get("/", async (req, res) => {
       (anObj) => anObj.recipeId === allRecipes[i].id
     );
     ratedRecipes.push({
+      id: allRecipes[i].id,
       name: allRecipes[i].name,
       prepTime: allRecipes[i].prepTime,
       imgUrl: allRecipes[i].imgUrl,
