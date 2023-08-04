@@ -158,7 +158,11 @@ recipeRouter.patch("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-recipeRouter.post("/", AuthMiddleware, async (req, res) => {
+recipeRouter.post("/", AuthMiddleware, async (req: AuthRequest, res) => {
+  const userId = req.userId;
+  if (!userId) {
+    return;
+  }
   const requestBody = req.body;
   if (
     "name" in requestBody &&
@@ -167,8 +171,7 @@ recipeRouter.post("/", AuthMiddleware, async (req, res) => {
     "prepTime" in requestBody &&
     "categories" in requestBody &&
     "serves" in requestBody &&
-    "imgUrl" in requestBody &&
-    "userId" in requestBody
+    "imgUrl" in requestBody
   ) {
     try {
       await prisma.recipe.create({
@@ -176,14 +179,12 @@ recipeRouter.post("/", AuthMiddleware, async (req, res) => {
           name: requestBody.name,
           instructions: requestBody.instructions,
           prepTime: requestBody.prepTime,
-          userId: requestBody.userId,
+          userId: userId,
           ingredients: requestBody.ingredients,
           serves: requestBody.serves,
           imgUrl: requestBody.imgUrl,
           categories: {
-            connect: requestBody.categories.map((id: number) => {
-              return { id: id };
-            }),
+            connect: requestBody.categories,
           },
         },
       });
