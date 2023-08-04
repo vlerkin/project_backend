@@ -84,7 +84,6 @@ recipeRouter.delete("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-
 recipeRouter.post("/:recipeId/comments", async (req, res) => {
   const requestBody = req.body;
   const recipeId = parseInt(req.params.recipeId);
@@ -99,7 +98,7 @@ recipeRouter.post("/:recipeId/comments", async (req, res) => {
         },
       });
       res.status(201).send({ message: "Comment created!" });
-} catch (error) {
+    } catch (error) {
       console.log(error);
       res.status(500).send({ message: error });
     }
@@ -110,7 +109,6 @@ recipeRouter.post("/:recipeId/comments", async (req, res) => {
   }
 });
 
-      
 recipeRouter.get("/:id", async (req, res) => {
   const recipeId = parseInt(req.params.id);
   const recipeIdRating = await ratedRecipe([recipeId]);
@@ -155,7 +153,11 @@ recipeRouter.patch("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-recipeRouter.post("/", AuthMiddleware, async (req, res) => {
+recipeRouter.post("/", AuthMiddleware, async (req: AuthRequest, res) => {
+  const userId = req.userId;
+  if (!userId) {
+    return;
+  }
   const requestBody = req.body;
   if (
     "name" in requestBody &&
@@ -164,8 +166,7 @@ recipeRouter.post("/", AuthMiddleware, async (req, res) => {
     "prepTime" in requestBody &&
     "categories" in requestBody &&
     "serves" in requestBody &&
-    "imgUrl" in requestBody &&
-    "userId" in requestBody
+    "imgUrl" in requestBody
   ) {
     try {
       await prisma.recipe.create({
@@ -173,14 +174,12 @@ recipeRouter.post("/", AuthMiddleware, async (req, res) => {
           name: requestBody.name,
           instructions: requestBody.instructions,
           prepTime: requestBody.prepTime,
-          userId: requestBody.userId,
+          userId: userId,
           ingredients: requestBody.ingredients,
           serves: requestBody.serves,
           imgUrl: requestBody.imgUrl,
           categories: {
-            connect: requestBody.categories.map((id: number) => {
-              return { id: id };
-            }),
+            connect: requestBody.categories,
           },
         },
       });
