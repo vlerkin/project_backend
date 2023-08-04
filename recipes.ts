@@ -35,6 +35,7 @@ recipeRouter.get("/show/my", AuthMiddleware, async (req: AuthRequest, res) => {
       (anObj) => anObj.recipeId === myRecipes[i].id
     );
     ratedRecipes.push({
+      id: myRecipes[i].id,
       name: myRecipes[i].name,
       prepTime: myRecipes[i].prepTime,
       imgUrl: myRecipes[i].imgUrl,
@@ -46,7 +47,7 @@ recipeRouter.get("/show/my", AuthMiddleware, async (req: AuthRequest, res) => {
           ),
     });
   }
-  res.send(recipeIdRating);
+  res.send(ratedRecipes);
 });
 
 recipeRouter.delete("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
