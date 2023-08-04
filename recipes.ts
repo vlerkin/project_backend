@@ -84,16 +84,21 @@ recipeRouter.delete("/:id", AuthMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-recipeRouter.post("/:recipeId/comments", async (req, res) => {
+recipeRouter.post("/comments", async (req, res) => {
   const requestBody = req.body;
-  const recipeId = parseInt(req.params.recipeId);
-  if ("name" in requestBody && "review" in requestBody) {
+
+  if (
+    "name" in requestBody &&
+    "review" in requestBody &&
+    "rating" in requestBody &&
+    "recipeId" in requestBody
+  ) {
     try {
       await prisma.comment.create({
         data: {
           name: requestBody.name,
           review: requestBody.review,
-          recipeId: recipeId,
+          recipeId: requestBody.recipeId,
           rating: requestBody.rating,
         },
       });
